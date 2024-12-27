@@ -79,7 +79,7 @@ void escreverResultado(Caverna* caverna) {
         fprintf(file_grafico, "%d %f\n", caverna->colunas, tempo_total); // O grafico so eh gerado para labirintos quadrados
     }
     if (vidaFinal <= 0) {
-        fprintf(arquivo, "impossivel\n");
+        fprintf(arquivo, "impossível\n");
         //printf("Impossível encontrar caminho válido\n");
         //printf("Tempo de execução: %.3f segundos\n", tempo);
         fclose(arquivo);
@@ -107,12 +107,69 @@ void escreverResultado(Caverna* caverna) {
         fprintf(arquivo, "%d %d\n", caminho[i].x + 1, caminho[i].y);
     }
 
-    /*
-    PRINTS
+    free(caminho);
+    fclose(arquivo);
+}
+
+void exibirCaminhoNoTerminal(Caverna* caverna) {
+    FILE* arquivo = fopen("resultado.txt", "w");
+    if (!arquivo) {
+        printf("Erro ao abrir arquivo de saida\n");
+        return;
+    }
+
+    FILE *file_grafico = fopen("Grafico/dados_grafico.txt", "a"); // Abre e cria, se nao existir, o arquivo para escrever os dados que serao plotados no grafico
+    if (file_grafico == NULL) {
+        printf("Erro: arquivo para plotar o gráfico não foi aberto corretamente.\n"); 
+        return; 
+    }
+
+    clock_t tempo_inicial = clock();
+    int vidaFinal = encontrarMelhorCaminho(caverna, caverna->inicio.x, caverna->inicio.y);
+    clock_t tempo_final = clock();
+    double tempo_total = ((double)(tempo_final - tempo_inicial)) / CLOCKS_PER_SEC;
+    if(caverna->linhas == caverna->colunas){
+        fprintf(file_grafico, "%d %f\n", caverna->colunas, tempo_total); // O grafico so eh gerado para labirintos quadrados
+    }
+    if (vidaFinal <= 0) {
+        fprintf(arquivo, "impossível\n");
+        //printf("Impossível encontrar caminho válido\n");
+        //printf("Tempo de execução: %.3f segundos\n", tempo);
+        fclose(arquivo);
+        return;
+    }
+
+    Ponto* caminho = (Ponto*)malloc(caverna->linhas * caverna->colunas * sizeof(Ponto));
+    if (!caminho) {
+        fclose(arquivo);
+        return;
+    }
+
+    int tamCaminho = 0;
+    Ponto atual = caverna->inicio;
+
+    // Constrói o caminho do início até o fim
+
+    // Dentro da sua função existente:
+    while (!(atual.x == caverna->fim.x && atual.y == caverna->fim.y)) {
+        caminho[tamCaminho++] = atual;
+        
+        atual = caverna->dp[atual.x][atual.y].anterior;
+    }
+    caminho[tamCaminho++] = caverna->fim;
+
+    // Imprime o caminho na ordem correta
+    for (int i = 0; i < tamCaminho; i++) {
+        fprintf(arquivo, "%d %d\n", caminho[i].x + 1, caminho[i].y);
+        caverna->matriz[caminho[i].x][caminho[i].y] = -2; // Use a specific integer value to mark the path
+        system("clear");
+        printf("Percorrendo célula (%d, %d):\n", caminho[i].x, caminho[i].y);
+        imprimeCaminho(caverna);
+        sleep(1); // Pausa para visualização
+    }
+    
     printf("Caminho encontrado com %d passos\n", tamCaminho);
     printf("Vida final: %d\n", vidaFinal);
-    printf("Tempo de execução: %.3f segundos\n", tempo);
-*/
     free(caminho);
     fclose(arquivo);
 }
@@ -123,6 +180,7 @@ int main(int argc, char* argv[]) {
         printf("Uso: %s <arquivo_entrada>\n", argv[0]);
         return 1;
     }
+     
 
     Caverna* caverna = lerArquivo(argv[1]);
     if (!caverna) {
@@ -130,6 +188,8 @@ int main(int argc, char* argv[]) {
     }
 
     escreverResultado(caverna);
+    exibirCaminhoNoTerminal(caverna);
+    
     
     liberarCaverna(caverna);
     free(caverna);

@@ -7,12 +7,13 @@ typedef struct {
     int linhas;
     int colunas;
     int vidaInicial;
-    int danoMinimo;     // Valor mínimo de dano
-    int danoMaximo;     // Valor máximo de dano
-    int vidaMinima;     // Valor mínimo de vida (poções)
-    int vidaMaxima;     // Valor máximo de vida (poções)
-    float probPotion;   // Probabilidade de gerar uma poção (0 a 1)
-    char* nomeArquivo;  // Nome do arquivo de saída
+    int danoMinimo;     // Valor minimo de dano
+    int danoMaximo;     // Valor maximo de dano
+    int vidaMinima;     // Valor minimo de vida (pocoes)
+    int vidaMaxima;     // Valor maximo de vida (pocoes)
+    int dificuldade; // Valor que define a dificuldade da caverna a ser gerada
+    char* nomeArquivo;  // Nome do arquivo de saida
 } Parametros;
 
 int gerarNumeroAleatorio(int min, int max);
+int geraCavernaTeste(Parametros* parametros);

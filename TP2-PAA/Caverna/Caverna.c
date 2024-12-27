@@ -19,7 +19,7 @@ Celula** alocarMatrizDP(int linhas, int colunas) {
 }
 
 void liberarCaverna(Caverna* caverna) {
-    // Antes de liberar memoria, verifica se a caverna, matriz e dp foram alocados, para evitar erros de memoria
+    // Antes de liberar memoria, verifica se a caverna, matriz e dp foram alocados, para evitar erros de memoria 
     if (!caverna) return;
     
     if(caverna->matriz){
@@ -37,11 +37,14 @@ void liberarCaverna(Caverna* caverna) {
     }
 }
 
-int posicaoValida(const Caverna* caverna, int x, int y){
-    if(x >= 0 && x < caverna->linhas && y >= 0 && y < caverna->colunas){ // Verifica se a posicao esta dentro dos limites da caverna
-        return 1; 
-    }
-    return 0; 
+// Função de estimativa heurística (Manhattan distance)
+int calcularHeuristica(int x1, int y1, int x2, int y2) {
+    return abs(x2 - x1) + abs(y2 - y1); // Pega somente o valor absoluto (positivo) da diferença entre as coordenadas (diferenca de Manhattan)
+} 
+
+// Verifica se uma posição é válida
+int posicaoValida(Caverna* caverna, int x, int y) {
+    return x >= 0 && x < caverna->linhas && y >= 0 && y < caverna->colunas;
 }
 
 int encontrarMelhorCaminho(Caverna* caverna, int x, int y){
@@ -52,6 +55,7 @@ int encontrarMelhorCaminho(Caverna* caverna, int x, int y){
 
     // Se ja calculamos este estado, retorna o valor memorizado
     if (caverna->dp[x][y].visitado){
+        
         return caverna->dp[x][y].vidaMaxima;
     }
 
@@ -87,6 +91,24 @@ int encontrarMelhorCaminho(Caverna* caverna, int x, int y){
     }
 
     caverna->dp[x][y].vidaMaxima = melhorVida; // Guarda a melhor vida possivel para a posicao x, y
+    //////////////////////////
     return melhorVida;
 }
+
+void imprimeCaminho(Caverna* caverna) {
+    for (int i = 0; i < caverna->linhas; i++) {
+        for (int j = 0; j < caverna->colunas; j++) {
+            if (caverna->matriz[i][j] == -2){
+                printf(cor_verde " * " resetar_cor);// Destaca a célula atual
+            } else{
+                printf(" * ");// Célula já visitada 
+            }
+        
+        }
+        printf("\n");
+    } 
+
+}
+
+
 

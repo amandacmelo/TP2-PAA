@@ -1,98 +1,130 @@
 /*
     AFAZERES
     - makefile (ok)
-    - interface (extra)
-    - gerador da caverna
-    - pesquisar heuristicas
+    - interface (extra) 
+    - gerador da caverna (ok)
+    - pesquisar heuristicas (ok)
     - explicação da movimentação para os 4 lados
 */
 
 #include "GerarCaverna.h"
 
-// Função para gerar um número aleatório entre min e max
-int gerarNumeroAleatorio(int min, int max) {
-    return min + rand() % (max - min + 1);
+// Gerando o numero aleatorio
+int gerarNumeroAleatorio(int minimo, int maximo) {
+    return minimo + rand() % (maximo - minimo + 1);
 }
 
-// Função para gerar um valor aleatório que pode ser dano ou vida
-int gerarValor(Parametros* params) {
-    if ((float)rand() / RAND_MAX < params->probPotion) {
-        // Gera um valor positivo (poção)
-        return gerarNumeroAleatorio(params->vidaMinima, params->vidaMaxima);
-    } else {
-        // Gera um valor negativo (dano)
-        return -gerarNumeroAleatorio(params->danoMinimo, params->danoMaximo);
-    }
-}
-
-// Função para gerar o arquivo de entrada
-void gerarCasoTeste(Parametros* params) {
-    FILE* arquivo = fopen(params->nomeArquivo, "w");
+int geraCavernaTeste(Parametros* parametros){
+    
+    int caverna[parametros->linhas][parametros->colunas]; // Cria a caverna
+    
+    FILE* arquivo = fopen(parametros->nomeArquivo, "w"); // Cria o arquivo para salvar a caverna
     if (!arquivo) {
-        printf("Erro ao criar arquivo %s\n", params->nomeArquivo);
-        return;
+        printf("Erro ao criar o arquivo!\n");
+        return 1; // Retorna 1 se houver erro
     }
 
-    // Primeira linha: dimensões e vida inicial
-    fprintf(arquivo, "%d %d %d\n", params->linhas, params->colunas, params->vidaInicial);
+    fprintf(arquivo, "%d %d %d\n", parametros->linhas, parametros->colunas, parametros-> vidaInicial); // coloca no arquivo as informacoes
 
-    // Escolhe posições aleatórias para I e F
-    int inicioX = params->linhas - 1;  // Última linha
-    int inicioY = params->colunas - 1;  // Última coluna
-    int fimX = gerarNumeroAleatorio(0, params->linhas/2);  // Metade superior
-    int fimY = gerarNumeroAleatorio(0, params->colunas-1);
+    // Inicializa a caverna com celulas (0)
+    for (int i = 0; i < parametros->linhas; i++) {
+        for (int j = 0; j < parametros->colunas; j++) {
+            caverna[i][j] = 0;  
+        }
+    }
 
-    // Gera a matriz
-    for (int i = 0; i < params->linhas; i++) {
-        for (int j = 0; j < params->colunas; j++) {
-            if (i == inicioX && j == inicioY) {
-                fprintf(arquivo, "I");
+
+    // Gerando os valores de danos e as pocoes de acordo com a dificuldade da caverna
+    for (int i = 0; i < parametros->linhas; i++) {
+        for (int j = 0; j < parametros->colunas; j++) {
+            if(parametros->dificuldade == 1){ // DIFICULDADE FACIL
+                if (gerarNumeroAleatorio(0, 4) == 0) {  // A cada 5 posicoes, uma tem chance ser dano
+                    caverna[i][j] = -gerarNumeroAleatorio(parametros->danoMinimo, parametros->danoMaximo); 
+                }
+
+                if (gerarNumeroAleatorio(0, 2) == 0) {  // A cada 3 posicoes, uma tem chance ser pocao
+                    caverna[i][j] = +gerarNumeroAleatorio(parametros->vidaMinima, parametros->vidaMaxima); 
+                }
             }
-            else if (i == fimX && j == fimY) {
-                fprintf(arquivo, "F");
+            else if(parametros->dificuldade == 2){ // DIFICULDADE MEDIA
+                if (gerarNumeroAleatorio(0, 3) == 0 ) {  // A cada 4 posicoes, uma tem chance ser dano 
+                    caverna[i][j] = -gerarNumeroAleatorio(parametros->danoMinimo, parametros->danoMaximo);
+                }
+                if (gerarNumeroAleatorio(0, 3) == 0 ) {  // A cada 4 posicoes, uma tem chance ser pocao
+                    caverna[i][j] = +gerarNumeroAleatorio(parametros->vidaMinima, parametros->vidaMaxima);
+                }
             }
-            else {
-                fprintf(arquivo, "%d", gerarValor(params));
+            else if(parametros->dificuldade>= 3){ // SE FOR UM NUMERO MAIOR OU IGUAL A 3
+                if (gerarNumeroAleatorio(0, 2) == 0){  // A cada 3 posicoes, uma tem chance de ser dano 
+                    caverna[i][j] = -gerarNumeroAleatorio(parametros->danoMinimo, parametros->danoMaximo);
+                }
+
+                if (gerarNumeroAleatorio(0, 4) == 0) { // A cada 5 posicoes, uma tem chance ser pocao
+                    caverna[i][j] = +gerarNumeroAleatorio(parametros->vidaMinima, parametros->vidaMaxima); 
+                }
             }
-            
-            // Adiciona espaço entre valores, exceto no último da linha
-            if (j < params->colunas - 1) {
-                fprintf(arquivo, " ");
+            else{
+                printf("Dificuldade Invalida");
+            }
+        }
+    }
+
+    // Calculando a posicao que o 'I' sera gerado
+    int borda = gerarNumeroAleatorio(0, 3); // Escolhe entre 4 bordas (0: topo, 1: base, 2: esquerda, 3: direita)
+    int inicioX, inicioY;
+
+    // Detalhe: A equipe optou por nao fazer com que o estudante inicie o jogo pela borda de cima e dar mais chances dele iniciar a direita
+    if (borda == 1) {
+        // Ultima linha
+        inicioX = parametros->linhas - 1;
+        inicioY = gerarNumeroAleatorio(0, parametros->colunas - 1);
+    } else if (borda == 2) {
+        // Primeira coluna
+        inicioX = gerarNumeroAleatorio(0, parametros->linhas - 1);
+        inicioY = 0;
+    } else {
+        // Ultima coluna
+        inicioX = gerarNumeroAleatorio(0, parametros->linhas - 1);
+        inicioY = parametros->colunas - 1;
+    }
+
+    // Marca a posição final com 'I'
+    caverna[inicioX][inicioY] = 'I';
+    
+    // Calculando a posicao que o 'F' sera gerado
+    int fimX = gerarNumeroAleatorio(0, parametros->linhas/2);  // Metade superior
+    int fimY = gerarNumeroAleatorio(0, parametros->colunas-1);
+    caverna[fimX][fimY] = 'F';
+
+      // Salva o caverna no arquivo
+    for (int i = 0; i < parametros->linhas; i++) {
+        for (int j = 0; j < parametros->colunas; j++) {
+            if (caverna[i][j] == 'I' || caverna[i][j] == 'F') {
+                fprintf(arquivo, "%c ", caverna[i][j]); // Escreve os caracteres diretamente
+            } else if (caverna[i][j] > 0){
+                fprintf(arquivo, "+%d ", caverna[i][j]);
+            }else {
+                fprintf(arquivo, "%d ", caverna[i][j]); // Escreve os valores numéricos
             }
         }
         fprintf(arquivo, "\n");
     }
 
     fclose(arquivo);
-    printf("Caso de teste gerado com sucesso em %s!\n", params->nomeArquivo);
-    printf("Dimensões: %dx%d\n", params->linhas, params->colunas);
-    printf("Vida inicial: %d\n", params->vidaInicial);
+    printf("Caso de teste gerado com sucesso em %s!\n", parametros->nomeArquivo);
+    printf("Dimensões: %dx%d\n", parametros->linhas, parametros->colunas);
+    printf("Vida inicial: %d\n", parametros->vidaInicial);
     printf("Posição inicial (I): (%d,%d)\n", inicioX, inicioY);
     printf("Posição final (F): (%d,%d)\n", fimX, fimY);
-}
-
-// Função para imprimir ajuda
-void imprimirAjuda() {
-    printf("Uso: gerador [opções]\n");
-    printf("Opções:\n");
-    printf("  -l N        Número de linhas (padrão: 4)\n");
-    printf("  -c N        Número de colunas (padrão: 5)\n");
-    printf("  -v N        Vida inicial (padrão: 40)\n");
-    printf("  -dmin N     Dano mínimo (padrão: 10)\n");
-    printf("  -dmax N     Dano máximo (padrão: 20)\n");
-    printf("  -vmin N     Vida mínima das poções (padrão: 10)\n");
-    printf("  -vmax N     Vida máxima das poções (padrão: 20)\n");
-    printf("  -p N        Probabilidade de poções (0-100) (padrão: 20)\n");
-    printf("  -o arquivo  Nome do arquivo de saída (padrão: caverna.txt)\n");
-    printf("  -h          Mostra esta ajuda\n");
+    return 0;
 }
 
 int main(int argc, char* argv[]) {
-    // Inicializa gerador de números aleatórios
+    // Inicializa gerador de numeros aleatorios
     srand(time(NULL));
 
-    // Parâmetros padrão
-    Parametros params = {
+    // Parametros padrao (Caso o usuario nao digite os argumentos)
+    Parametros parametros = {
         .linhas = 4,
         .colunas = 5,
         .vidaInicial = 40,
@@ -100,57 +132,38 @@ int main(int argc, char* argv[]) {
         .danoMaximo = 20,
         .vidaMinima = 10,
         .vidaMaxima = 20,
-        .probPotion = 0.2,
+        .dificuldade = 2,
         .nomeArquivo = "caverna.txt"
     };
 
-    // Processa argumentos da linha de comando
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-h") == 0) {
-            imprimirAjuda();
-            return 0;
-        }
-        else if (i + 1 < argc) {
-            if (strcmp(argv[i], "-l") == 0)
-                params.linhas = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-c") == 0)
-                params.colunas = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-v") == 0)
-                params.vidaInicial = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-dmin") == 0)
-                params.danoMinimo = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-dmax") == 0)
-                params.danoMaximo = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-vmin") == 0)
-                params.vidaMinima = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-vmax") == 0)
-                params.vidaMaxima = atoi(argv[i+1]);
-            else if (strcmp(argv[i], "-p") == 0)
-                params.probPotion = atof(argv[i+1]) / 100.0;
-            else if (strcmp(argv[i], "-o") == 0)
-                params.nomeArquivo = argv[i+1];
-            i++;  // Pula o próximo argumento
-        }
+    if (argc > 1) {
+        parametros.linhas = argc > 1 ? atoi(argv[1]) : parametros.linhas;
+        parametros.colunas = argc > 2 ? atoi(argv[2]) : parametros.colunas;
+        parametros.vidaInicial = argc > 3 ? atoi(argv[3]) : parametros.vidaInicial;
+        parametros.danoMinimo = argc > 4 ? atoi(argv[4]) : parametros.danoMinimo;
+        parametros.danoMaximo = argc > 5 ? atoi(argv[5]) : parametros.danoMaximo;
+        parametros.vidaMinima = argc > 6 ? atoi(argv[6]) : parametros.vidaMinima;
+        parametros.vidaMaxima = argc > 7 ? atoi(argv[7]) : parametros.vidaMaxima;
+        parametros.dificuldade = argc > 8 ? atoi(argv[8]) : parametros.dificuldade;
+        parametros.nomeArquivo = argc > 9 ? argv[9] : parametros.nomeArquivo;
     }
 
-    // Validações básicas
-    if (params.linhas <= 0 || params.colunas <= 0) {
+
+    // Validacoes basicas
+    if (parametros.linhas <= 0 || parametros.colunas <= 0) {
         printf("Erro: Dimensões devem ser positivas\n");
         return 1;
     }
-    if (params.danoMaximo < params.danoMinimo) {
+    if (parametros.danoMaximo < parametros.danoMinimo) {
         printf("Erro: Dano máximo deve ser maior que dano mínimo\n");
         return 1;
     }
-    if (params.vidaMaxima < params.vidaMinima) {
+    if (parametros.vidaMaxima < parametros.vidaMinima) {
         printf("Erro: Vida máxima deve ser maior que vida mínima\n");
         return 1;
     }
-    if (params.probPotion < 0 || params.probPotion > 1) {
-        printf("Erro: Probabilidade deve estar entre 0 e 1\n");
-        return 1;
-    }
+    
 
-    gerarCasoTeste(&params);
+    geraCavernaTeste(&parametros);
     return 0;
 }
