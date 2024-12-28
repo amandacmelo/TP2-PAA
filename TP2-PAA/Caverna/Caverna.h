@@ -20,6 +20,7 @@ typedef struct {
     int visitado;      // Flag para indicar se já foi visitado
 } Celula;
 
+
 typedef struct {
     int** matriz;
     Celula** dp;
@@ -36,8 +37,8 @@ int** alocarMatriz(int linhas, int colunas);
 Celula** alocarMatrizDP(int linhas, int colunas);
 void liberarCaverna(Caverna* caverna);
 int posicaoValida(Caverna* caverna, int x, int y);
-int calcularHeuristica(int x1, int y1, int x2, int y2);
+
+int heuristica(Caverna* caverna, int x, int y);
 int encontrarMelhorCaminho(Caverna* caverna, int x, int y);
-//int ExibirMelhorCaminho(Caverna* caverna, int x, int y);
 void imprimeCaminho(Caverna* caverna);
 

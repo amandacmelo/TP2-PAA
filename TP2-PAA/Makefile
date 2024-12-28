@@ -1,9 +1,11 @@
 # Definir um valor fixo para o arquivo de entrada
-INPUT_FILE = teste.txt
+#INPUT_FILE = teste.txt
 #all: compile
 
+all: run
+
 run: compile
-	./run $(INPUT_FILE)
+	./run $(ARGS)
 
 compile: Caverna/Caverna.o main.o
 	gcc -o run Caverna/Caverna.o main.o

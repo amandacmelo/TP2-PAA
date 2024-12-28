@@ -37,68 +37,68 @@ void liberarCaverna(Caverna* caverna) {
     }
 }
 
-// Função de estimativa heurística (Manhattan distance)
-int calcularHeuristica(int x1, int y1, int x2, int y2) {
-    return abs(x2 - x1) + abs(y2 - y1); // Pega somente o valor absoluto (positivo) da diferença entre as coordenadas (diferenca de Manhattan)
-} 
 
-// Verifica se uma posição é válida
 int posicaoValida(Caverna* caverna, int x, int y) {
     return x >= 0 && x < caverna->linhas && y >= 0 && y < caverna->colunas;
 }
 
-int encontrarMelhorCaminho(Caverna* caverna, int x, int y){
-    // Se posicao invalida, retorna -1
-    if (!posicaoValida(caverna, x, y)){
-        return -1;
+// Heurística para estimar o valor máximo possível a partir de uma posição
+int heuristica(Caverna* caverna, int x, int y) {
+    // Considera o melhor caso: todos os valores positivos no caminho até o fim
+    int distancia = abs(caverna->fim.x - x) + abs(caverna->fim.y - y); // Distancia de manhattan (heuristica que foi adaptada)
+    return caverna->vidaInicial + (distancia * 40); // 40 é o valor máximo positivo estimado
+}
+
+int encontrarMelhorCaminho(Caverna* caverna, int x, int y) {
+    if (!posicaoValida(caverna, x, y)) {
+        return INT_MIN;
     }
 
-    // Se ja calculamos este estado, retorna o valor memorizado
-    if (caverna->dp[x][y].visitado){
-        
-        return caverna->dp[x][y].vidaMaxima;
+    Celula* estado = &caverna->dp[x][y];
+    if (estado->visitado) {
+        return estado->vidaMaxima;
     }
 
-    // Marca como visitado
-    caverna->dp[x][y].visitado = 1;
-
-    // Se eh a posicao final
-    if (x == caverna->fim.x && y == caverna->fim.y){
-        // Estamos usando programacao dinamica de baixo para cima, por isso passamos a vidaInicial (eh o caso base), 
-        // que sera somado com as vidas de cada cada chamada recursiva, dentro do for abaixo, para encontrar o melhor caminho,
-        // ou seja, a melhor vida que eh o valor que sera retornado  
-        caverna->dp[x][y].vidaMaxima = caverna->vidaInicial; 
-        return caverna->dp[x][y].vidaMaxima;
+    // Poda com heurística
+    int estimativa = heuristica(caverna, x, y);
+    if (estimativa < 0) {
+        return INT_MIN;
     }
 
-    int melhorVida = -1; // Vai armazenar o maior valor possivel de vida
+    estado->visitado = 1;
+
+    if (x == caverna->fim.x && y == caverna->fim.y) {
+        estado->vidaMaxima = caverna->vidaInicial;
+        return estado->vidaMaxima;
+    }
+
+    int melhorVida = INT_MIN;
     const Ponto movimentos[] = {{-1, 0}, {0, -1}}; // cima, esquerda
 
-    // Tenta cada movimento possivel
-    for (int i = 0; i < 2; i++){
-        // Calcula a nova posicao
-        int novoX = x + movimentos[i].x; 
+    // Otimização: tenta primeiro o movimento que parece mais promissor
+    for (int i = 0; i < 2; i++) {
+        int novoX = x + movimentos[i].x;
         int novoY = y + movimentos[i].y;
         
         int vidaProximaCelula = encontrarMelhorCaminho(caverna, novoX, novoY);
-        if (vidaProximaCelula > 0){ // Se a vidaProximaCelula for maior que 0, significa que eh possivel passar por essa posicao (eh uma posicao valida)
-            int novaVida = vidaProximaCelula + caverna->matriz[x][y]; 
-            if (novaVida > melhorVida) { // Pega a maior vida possivel (melhor caminho)
+        if (vidaProximaCelula > INT_MIN) {
+            int novaVida = vidaProximaCelula + caverna->matriz[x][y];
+            if (novaVida > melhorVida) {
                 melhorVida = novaVida;
-                caverna->dp[x][y].anterior = (Ponto){novoX, novoY}; // Guarda a posicao anterior no melhor caminho 
+                estado->anterior = (Ponto){novoX, novoY};
             }
         }
     }
 
-    caverna->dp[x][y].vidaMaxima = melhorVida; // Guarda a melhor vida possivel para a posicao x, y
-    //////////////////////////
+    estado->vidaMaxima = melhorVida;
     return melhorVida;
 }
+
 
 void imprimeCaminho(Caverna* caverna) {
     for (int i = 0; i < caverna->linhas; i++) {
         for (int j = 0; j < caverna->colunas; j++) {
-            if (caverna->matriz[i][j] == -2){
+            if (caverna->matriz[i][j] == INT_MIN){
                 printf(cor_verde " * " resetar_cor);// Destaca a célula atual
             } else{
                 printf(" * ");// Célula já visitada 

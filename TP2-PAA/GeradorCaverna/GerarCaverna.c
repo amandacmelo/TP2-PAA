@@ -1,10 +1,10 @@
 /*
     AFAZERES
     - makefile (ok)
-    - interface (extra) 
+    - interface (extra) (ok)
     - gerador da caverna (ok)
     - pesquisar heuristicas (ok)
-    - explicação da movimentação para os 4 lados
+    - explicacao da movimentacao para os 4 lados
 */
 
 #include "GerarCaverna.h"
@@ -32,7 +32,11 @@ int geraCavernaTeste(Parametros* parametros){
             caverna[i][j] = 0;  
         }
     }
-
+   //Por causa da heuristica que considera que o maior valor eh 40, delimitamos vida máxima para ela funcionar corretamente
+    if(parametros->vidaMaxima > 50){
+        parametros->vidaMaxima = parametros->vidaMinima + rand() % (51 - parametros->vidaMaxima);
+       
+    }
 
     // Gerando os valores de danos e as pocoes de acordo com a dificuldade da caverna
     for (int i = 0; i < parametros->linhas; i++) {
@@ -119,51 +123,3 @@ int geraCavernaTeste(Parametros* parametros){
     return 0;
 }
 
-int main(int argc, char* argv[]) {
-    // Inicializa gerador de numeros aleatorios
-    srand(time(NULL));
-
-    // Parametros padrao (Caso o usuario nao digite os argumentos)
-    Parametros parametros = {
-        .linhas = 4,
-        .colunas = 5,
-        .vidaInicial = 40,
-        .danoMinimo = 10,
-        .danoMaximo = 20,
-        .vidaMinima = 10,
-        .vidaMaxima = 20,
-        .dificuldade = 2,
-        .nomeArquivo = "caverna.txt"
-    };
-
-    if (argc > 1) {
-        parametros.linhas = argc > 1 ? atoi(argv[1]) : parametros.linhas;
-        parametros.colunas = argc > 2 ? atoi(argv[2]) : parametros.colunas;
-        parametros.vidaInicial = argc > 3 ? atoi(argv[3]) : parametros.vidaInicial;
-        parametros.danoMinimo = argc > 4 ? atoi(argv[4]) : parametros.danoMinimo;
-        parametros.danoMaximo = argc > 5 ? atoi(argv[5]) : parametros.danoMaximo;
-        parametros.vidaMinima = argc > 6 ? atoi(argv[6]) : parametros.vidaMinima;
-        parametros.vidaMaxima = argc > 7 ? atoi(argv[7]) : parametros.vidaMaxima;
-        parametros.dificuldade = argc > 8 ? atoi(argv[8]) : parametros.dificuldade;
-        parametros.nomeArquivo = argc > 9 ? argv[9] : parametros.nomeArquivo;
-    }
-
-
-    // Validacoes basicas
-    if (parametros.linhas <= 0 || parametros.colunas <= 0) {
-        printf("Erro: Dimensões devem ser positivas\n");
-        return 1;
-    }
-    if (parametros.danoMaximo < parametros.danoMinimo) {
-        printf("Erro: Dano máximo deve ser maior que dano mínimo\n");
-        return 1;
-    }
-    if (parametros.vidaMaxima < parametros.vidaMinima) {
-        printf("Erro: Vida máxima deve ser maior que vida mínima\n");
-        return 1;
-    }
-    
-
-    geraCavernaTeste(&parametros);
-    return 0;
-}

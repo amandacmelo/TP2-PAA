@@ -1,9 +1,17 @@
-# Compilando o arquivo GeradorCaverna.c para GeradorCaverna.o
-all: GeradorCaverna.o
+all: run
 
-GeradorCaverna.o: GeradorCaverna.c
-	gcc -c GeradorCaverna.c -o GeradorCaverna.o
+run: compile
+	./run $(ARGS)
 
-# Limpeza dos arquivos compilados
+compile: GerarCaverna.o MainCaverna.o
+	gcc -o run GerarCaverna.o MainCaverna.o
+
+GerarCaverna.o: GerarCaverna.c
+	gcc -c GerarCaverna.c -o GerarCaverna.o
+
+MainCaverna.o: MainCaverna.c
+	gcc -c MainCaverna.c -o MainCaverna.o
+
+# Limpar arquivos compilados
 clean:
-	rm -f GeradorCaverna.o
+	rm -f run GerarCaverna.o MainCaverna.o

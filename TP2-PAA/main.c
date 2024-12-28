@@ -161,7 +161,7 @@ void exibirCaminhoNoTerminal(Caverna* caverna) {
     // Imprime o caminho na ordem correta
     for (int i = 0; i < tamCaminho; i++) {
         fprintf(arquivo, "%d %d\n", caminho[i].x + 1, caminho[i].y);
-        caverna->matriz[caminho[i].x][caminho[i].y] = -2; // Use a specific integer value to mark the path
+        caverna->matriz[caminho[i].x][caminho[i].y] = INT_MIN; 
         system("clear");
         printf("Percorrendo célula (%d, %d):\n", caminho[i].x, caminho[i].y);
         imprimeCaminho(caverna);
@@ -175,21 +175,27 @@ void exibirCaminhoNoTerminal(Caverna* caverna) {
 }
 
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        printf("Uso: %s <arquivo_entrada>\n", argv[0]);
-        return 1;
-    }
-     
 
+int main(int argc, char* argv[]) {
     Caverna* caverna = lerArquivo(argv[1]);
     if (!caverna) {
         return 1;
     }
 
+    char *nomearquivo = "teste.txt"; //Deixa determinado arquivo teste.txt como padrão
+    int exibir = 0;  //Deixa determinado que não será exibido o caminho no terminal, caso o usuario deseje, ele pode colocar o segundo argumento como 1
+
+    if (argc > 1) {
+        nomearquivo = argc > 1 ? (argv[1]) : nomearquivo;
+        exibir = argc > 2 ? atoi(argv[2]) : exibir; 
+    }
+
+    // Se usuario colocar o segundo argumento como 1, o caminho eh imprimido no terminal
+    if(exibir == 1) {
+        exibirCaminhoNoTerminal(caverna); // Função que imprime o caminho no terminal
+    }
+
     escreverResultado(caverna);
-    exibirCaminhoNoTerminal(caverna);
-    
     
     liberarCaverna(caverna);
     free(caverna);
