@@ -1,7 +1,7 @@
 #include "Caverna.h"
 
 // Funcoes de alocacao de memoria
-int** alocarMatriz(int linhas, int colunas) {
+int** alocaMatriz(int linhas, int colunas) {
     int** matriz = (int**)malloc(linhas * sizeof(int*));
     for (int i = 0; i < linhas; i++) {
         matriz[i] = (int*)malloc(colunas * sizeof(int));
@@ -9,7 +9,7 @@ int** alocarMatriz(int linhas, int colunas) {
     return matriz;
 }
 
-Celula** alocarMatrizDP(int linhas, int colunas) {
+Celula** alocaMatrizDP(int linhas, int colunas) {
     Celula** matriz = (Celula**)malloc(linhas * sizeof(Celula*));
     
     for (int i = 0; i < linhas; i++) {
@@ -18,7 +18,7 @@ Celula** alocarMatrizDP(int linhas, int colunas) {
     return matriz;
 }
 
-void liberarCaverna(Caverna* caverna) {
+void liberaCaverna(Caverna* caverna) {
     // Antes de liberar memoria, verifica se a caverna, matriz e dp foram alocados, para evitar erros de memoria 
     if (!caverna) return;
     
@@ -49,7 +49,7 @@ int heuristica(Caverna* caverna, int x, int y) {
     return caverna->vidaInicial + (distancia * 40); // 40 é o valor máximo positivo estimado
 }
 
-int encontrarMelhorCaminho(Caverna* caverna, int x, int y) {
+int encontraMelhorCaminho(Caverna* caverna, int x, int y) {
     if (!posicaoValida(caverna, x, y)) {
         return INT_MIN;
     }
@@ -80,7 +80,7 @@ int encontrarMelhorCaminho(Caverna* caverna, int x, int y) {
         int novoX = x + movimentos[i].x;
         int novoY = y + movimentos[i].y;
         
-        int vidaProximaCelula = encontrarMelhorCaminho(caverna, novoX, novoY);
+        int vidaProximaCelula = encontraMelhorCaminho(caverna, novoX, novoY);
         if (vidaProximaCelula > INT_MIN) {
             int novaVida = vidaProximaCelula + caverna->matriz[x][y];
             if (novaVida > melhorVida) {

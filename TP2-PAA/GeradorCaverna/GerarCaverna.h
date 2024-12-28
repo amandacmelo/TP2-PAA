@@ -15,5 +15,5 @@ typedef struct {
     char* nomeArquivo;  // Nome do arquivo de saida
 } Parametros;
 
-int gerarNumeroAleatorio(int min, int max);
+int geraNumeroAleatorio(int min, int max);
 int geraCavernaTeste(Parametros* parametros);

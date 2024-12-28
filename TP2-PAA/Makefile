@@ -1,8 +1,4 @@
-# Definir um valor fixo para o arquivo de entrada
-#INPUT_FILE = teste.txt
-#all: compile
-
-all: run
+#all: run
 
 run: compile
 	./run $(ARGS)

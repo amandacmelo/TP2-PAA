@@ -33,12 +33,12 @@ typedef struct {
 
 
 // Funcoes
-int** alocarMatriz(int linhas, int colunas);
-Celula** alocarMatrizDP(int linhas, int colunas);
-void liberarCaverna(Caverna* caverna);
+int** alocaMatriz(int linhas, int colunas);
+Celula** alocaMatrizDP(int linhas, int colunas);
+void liberaCaverna(Caverna* caverna);
 int posicaoValida(Caverna* caverna, int x, int y);
 
 int heuristica(Caverna* caverna, int x, int y);
-int encontrarMelhorCaminho(Caverna* caverna, int x, int y);
+int encontraMelhorCaminho(Caverna* caverna, int x, int y);
 void imprimeCaminho(Caverna* caverna);
 

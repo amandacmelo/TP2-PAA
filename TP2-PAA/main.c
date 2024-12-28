@@ -15,11 +15,11 @@ Caverna* lerArquivo(const char* nomeArquivo) {
 
     fscanf(arquivo, "%d %d %d", &caverna->linhas, &caverna->colunas, &caverna->vidaInicial);
 
-    caverna->matriz = alocarMatriz(caverna->linhas, caverna->colunas);
-    caverna->dp = alocarMatrizDP(caverna->linhas, caverna->colunas);
+    caverna->matriz = alocaMatriz(caverna->linhas, caverna->colunas);
+    caverna->dp = alocaMatrizDP(caverna->linhas, caverna->colunas);
     
     if (!caverna->matriz || !caverna->dp) {
-        liberarCaverna(caverna);
+        liberaCaverna(caverna);
         free(caverna);
         fclose(arquivo);
         return NULL;
@@ -58,7 +58,7 @@ Caverna* lerArquivo(const char* nomeArquivo) {
     return caverna;
 }
 
-void escreverResultado(Caverna* caverna) {
+void escreveResultado(Caverna* caverna) {
     FILE* arquivo = fopen("resultado.txt", "w");
     if (!arquivo) {
         printf("Erro ao abrir arquivo de saida\n");
@@ -72,7 +72,7 @@ void escreverResultado(Caverna* caverna) {
     }
 
     clock_t tempo_inicial = clock();
-    int vidaFinal = encontrarMelhorCaminho(caverna, caverna->inicio.x, caverna->inicio.y);
+    int vidaFinal = encontraMelhorCaminho(caverna, caverna->inicio.x, caverna->inicio.y);
     clock_t tempo_final = clock();
     double tempo_total = ((double)(tempo_final - tempo_inicial)) / CLOCKS_PER_SEC;
     if(caverna->linhas == caverna->colunas){
@@ -111,7 +111,7 @@ void escreverResultado(Caverna* caverna) {
     fclose(arquivo);
 }
 
-void exibirCaminhoNoTerminal(Caverna* caverna) {
+void exibeCaminhoTerminal(Caverna* caverna) {
     FILE* arquivo = fopen("resultado.txt", "w");
     if (!arquivo) {
         printf("Erro ao abrir arquivo de saida\n");
@@ -125,7 +125,7 @@ void exibirCaminhoNoTerminal(Caverna* caverna) {
     }
 
     clock_t tempo_inicial = clock();
-    int vidaFinal = encontrarMelhorCaminho(caverna, caverna->inicio.x, caverna->inicio.y);
+    int vidaFinal = encontraMelhorCaminho(caverna, caverna->inicio.x, caverna->inicio.y);
     clock_t tempo_final = clock();
     double tempo_total = ((double)(tempo_final - tempo_inicial)) / CLOCKS_PER_SEC;
     if(caverna->linhas == caverna->colunas){
@@ -163,7 +163,7 @@ void exibirCaminhoNoTerminal(Caverna* caverna) {
         fprintf(arquivo, "%d %d\n", caminho[i].x + 1, caminho[i].y);
         caverna->matriz[caminho[i].x][caminho[i].y] = INT_MIN; 
         system("clear");
-        printf("Percorrendo célula (%d, %d):\n", caminho[i].x, caminho[i].y);
+        printf("Percorrendo célula (%d, %d):\n", caminho[i].x+1, caminho[i].y);
         imprimeCaminho(caverna);
         sleep(1); // Pausa para visualização
     }
@@ -174,30 +174,28 @@ void exibirCaminhoNoTerminal(Caverna* caverna) {
     fclose(arquivo);
 }
 
-
-
 int main(int argc, char* argv[]) {
-    Caverna* caverna = lerArquivo(argv[1]);
+    char *nomearquivo = "teste.txt"; // Deixa determinado arquivo teste.txt como padrão
+    int exibir = 0;  // Deixa determinado que não será exibido o caminho no terminal, caso o usuario deseje, ele pode colocar o segundo argumento como 1
+
+    if (argc > 1) {
+        nomearquivo = argv[1];
+        exibir = argc > 2 ? atoi(argv[2]) : exibir; 
+    }
+
+    Caverna* caverna = lerArquivo(nomearquivo); // Usa nomearquivo aqui
     if (!caverna) {
         return 1;
     }
 
-    char *nomearquivo = "teste.txt"; //Deixa determinado arquivo teste.txt como padrão
-    int exibir = 0;  //Deixa determinado que não será exibido o caminho no terminal, caso o usuario deseje, ele pode colocar o segundo argumento como 1
-
-    if (argc > 1) {
-        nomearquivo = argc > 1 ? (argv[1]) : nomearquivo;
-        exibir = argc > 2 ? atoi(argv[2]) : exibir; 
-    }
-
     // Se usuario colocar o segundo argumento como 1, o caminho eh imprimido no terminal
     if(exibir == 1) {
-        exibirCaminhoNoTerminal(caverna); // Função que imprime o caminho no terminal
+        exibeCaminhoTerminal(caverna); // Função que imprime o caminho no terminal
     }
 
-    escreverResultado(caverna);
+    escreveResultado(caverna);
     
-    liberarCaverna(caverna);
+    liberaCaverna(caverna);
     free(caverna);
     return 0;
 }
