@@ -5,10 +5,13 @@ tamanhos = []
 tempos = []
 # Abri o arquivo para leitura e salva os dado
 with open("Grafico/dados_grafico.txt", "r") as file:
-    for line in file:
-        tamanho, tempo = line.split()
-        tamanhos.append(int(tamanho))
-        tempos.append(float(tempo))
+    try:
+        for line in file:
+            tamanho, tempo = line.split()
+            tamanhos.append(int(tamanho))
+            tempos.append(float(tempo))
+    except ValueError:
+        print("Erro ao ler os dados do arquivo. Verifique se o arquivo está no formato correto.")
 
 # Plotar o grafico
 plt.plot(tamanhos, tempos, marker='o')
