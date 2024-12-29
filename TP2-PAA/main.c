@@ -163,12 +163,12 @@ void exibeCaminhoTerminal(Caverna* caverna) {
         fprintf(arquivo, "%d %d\n", caminho[i].x + 1, caminho[i].y);
         caverna->matriz[caminho[i].x][caminho[i].y] = INT_MIN; 
         system("clear");
-        printf("Percorrendo célula (%d, %d):\n", caminho[i].x+1, caminho[i].y);
+        printf("\nPercorrendo célula (%d, %d):\n\n", caminho[i].x+1, caminho[i].y);
         imprimeCaminho(caverna);
         sleep(1); // Pausa para visualização
     }
     
-    printf("Caminho encontrado com %d passos\n", tamCaminho);
+    printf("\nCaminho encontrado com %d passos\n", tamCaminho);
     printf("Vida final: %d\n", vidaFinal);
     free(caminho);
     fclose(arquivo);

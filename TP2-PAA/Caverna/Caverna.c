@@ -11,7 +11,6 @@ int** alocaMatriz(int linhas, int colunas) {
 
 Celula** alocaMatrizDP(int linhas, int colunas) {
     Celula** matriz = (Celula**)malloc(linhas * sizeof(Celula*));
-    
     for (int i = 0; i < linhas; i++) {
         matriz[i] = (Celula*)calloc(colunas, sizeof(Celula));
     }
@@ -94,20 +93,18 @@ int encontraMelhorCaminho(Caverna* caverna, int x, int y) {
     return melhorVida;
 }
 
-
 void imprimeCaminho(Caverna* caverna) {
     for (int i = 0; i < caverna->linhas; i++) {
         for (int j = 0; j < caverna->colunas; j++) {
             if (caverna->matriz[i][j] == INT_MIN){
-                printf(cor_verde " * " resetar_cor);// Destaca a célula atual
-            } else{
-                printf(" * ");// Célula já visitada 
+                printf(cor_azul " ⍩⃝ " resetar_cor); // Destaca a célula atual
+            } 
+            else{
+                printf(" * "); // Célula já visitada 
             }
-        
         }
         printf("\n");
     } 
-
 }
 
 

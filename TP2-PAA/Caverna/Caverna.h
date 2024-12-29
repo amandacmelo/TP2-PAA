@@ -5,8 +5,10 @@
 #include <limits.h>
 #include <unistd.h>
 
-#define cor_verde "\x1b[42m" 
+
+#define cor_azul "\x1b[44m"
 #define resetar_cor "\x1b[0m"
+
 
 // Estrutura para armazenar as coordenadas
 typedef struct {
@@ -37,7 +39,6 @@ int** alocaMatriz(int linhas, int colunas);
 Celula** alocaMatrizDP(int linhas, int colunas);
 void liberaCaverna(Caverna* caverna);
 int posicaoValida(Caverna* caverna, int x, int y);
-
 int heuristica(Caverna* caverna, int x, int y);
 int encontraMelhorCaminho(Caverna* caverna, int x, int y);
 void imprimeCaminho(Caverna* caverna);

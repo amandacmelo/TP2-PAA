@@ -16,7 +16,7 @@ int geraCavernaTeste(Parametros* parametros){
     }
 
     
-    if(parametros->danoMinimo <= 0 || parametros->danoMaximo <= 0 || parametros->vidaMinima <= 0 || parametros->vidaMaxima <= 0 || parametros->vidaInicial <= 0){
+    if(parametros->danoMinimo <= 0 || parametros->danoMaximo <= 0 || parametros->pocaoMinima <= 0 || parametros->pocaoMaxima <= 0 || parametros->vidaInicial <= 0){
         printf("Valores nulos e negativos nao sao permitidos");
         return 1;
     }
@@ -31,37 +31,37 @@ int geraCavernaTeste(Parametros* parametros){
     }
 
    //Por causa da heuristica que considera que o maior valor eh 40, delimitamos vida máxima para ela funcionar corretamente
-    if(parametros->vidaMaxima > 50){
-        parametros->vidaMaxima = geraNumeroAleatorio(parametros->vidaMinima, 50);
+    if(parametros->pocaoMaxima > 50){
+        parametros->pocaoMaxima = geraNumeroAleatorio(parametros->pocaoMinima, 50);
     }
 
     // Gerando os valores de danos e as pocoes de acordo com a dificuldade da caverna
     for (int i = 0; i < parametros->linhas; i++) {
         for (int j = 0; j < parametros->colunas; j++) {
             if(parametros->dificuldade == 1){ // DIFICULDADE FACIL
-                if (geraNumeroAleatorio(0, 4) == 0) {  // A cada 5 posicoes, uma tem chance ser dano
+                if (geraNumeroAleatorio(0, 4) == 0) {  // Cada posicao tem 1 chance em 5 de ser dano
                     caverna[i][j] = -geraNumeroAleatorio(parametros->danoMinimo, parametros->danoMaximo); 
                 }
 
-                if (geraNumeroAleatorio(0, 2) == 0) {  // A cada 3 posicoes, uma tem chance ser pocao
-                    caverna[i][j] = +geraNumeroAleatorio(parametros->vidaMinima, parametros->vidaMaxima); 
+                if (geraNumeroAleatorio(0, 2) == 0) {  // Cada posicao tem 1 chance em 3 de ser pocao
+                    caverna[i][j] = +geraNumeroAleatorio(parametros->pocaoMinima, parametros->pocaoMaxima); 
                 }
             }
             else if(parametros->dificuldade == 2){ // DIFICULDADE MEDIA
-                if (geraNumeroAleatorio(0, 3) == 0 ) {  // A cada 4 posicoes, uma tem chance ser dano 
+                if (geraNumeroAleatorio(0, 3) == 0 ) {  //Cada posicao tem 1 chance em 4 de ser dano 
                     caverna[i][j] = -geraNumeroAleatorio(parametros->danoMinimo, parametros->danoMaximo);
                 }
-                if (geraNumeroAleatorio(0, 3) == 0 ) {  // A cada 4 posicoes, uma tem chance ser pocao
-                    caverna[i][j] = +geraNumeroAleatorio(parametros->vidaMinima, parametros->vidaMaxima);
+                if (geraNumeroAleatorio(0, 3) == 0 ) {  // Cada posicao tem 1 chance em 4 de ser pocao
+                    caverna[i][j] = +geraNumeroAleatorio(parametros->pocaoMinima, parametros->pocaoMaxima);
                 }
             }
             else if(parametros->dificuldade>= 3){ // SE FOR UM NUMERO MAIOR OU IGUAL A 3
-                if (geraNumeroAleatorio(0, 2) == 0){  // A cada 3 posicoes, uma tem chance de ser dano 
+                if (geraNumeroAleatorio(0, 2) == 0){  //Cada posicao tem 1 chance em 3 de ser dano 
                     caverna[i][j] = -geraNumeroAleatorio(parametros->danoMinimo, parametros->danoMaximo);
                 }
 
-                if (geraNumeroAleatorio(0, 4) == 0) { // A cada 5 posicoes, uma tem chance ser pocao
-                    caverna[i][j] = +geraNumeroAleatorio(parametros->vidaMinima, parametros->vidaMaxima); 
+                if (geraNumeroAleatorio(0, 4) == 0) { // Cada posicao tem 1 chance em 5 de ser pocao
+                    caverna[i][j] = +geraNumeroAleatorio(parametros->pocaoMinima, parametros->pocaoMaxima); 
                 }
             }
             else{
