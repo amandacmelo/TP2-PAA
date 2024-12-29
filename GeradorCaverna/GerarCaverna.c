@@ -115,8 +115,8 @@ int geraCavernaTeste(Parametros* parametros){
     printf("Caso de teste gerado com sucesso em %s!\n", parametros->nomeArquivo);
     printf("Dimensões: %dx%d\n", parametros->linhas, parametros->colunas);
     printf("Vida inicial: %d\n", parametros->vidaInicial);
-    printf("Posição inicial (I): (%d,%d)\n", inicioX, inicioY);
-    printf("Posição final (F): (%d,%d)\n", fimX, fimY);
+    printf("Posição inicial (I): (%d,%d)\n", inicioX + 1, inicioY);
+    printf("Posição final (F): (%d,%d)\n", fimX + 1, fimY);
     return 0;
 }
 
